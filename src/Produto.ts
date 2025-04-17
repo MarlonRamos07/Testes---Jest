@@ -6,7 +6,7 @@ class Produto {
     preco: number = 0;
     estoque: number = 0; 
     precoPromocional: number | null = null;
-  
+    descontoPercentual: number | null = null;
     constructor(nome: string, preco: number, estoque: number) {
       if(nome.length < 3 ){
         throw new Error(Valida_Caractere)
@@ -28,7 +28,6 @@ class Produto {
         throw new Error(Valida_Estoque)
       }
 
-      
     }
   
     definirPrecoPromocional(novoPreco: number): void {
@@ -40,11 +39,20 @@ class Produto {
     }
   
     obterPrecoFinal(): number {
-      if (this.precoPromocional) {
-        return this.precoPromocional;
+      
+      let precoBase = this.precoPromocional ?? this.preco;
+    
+      
+      if (this.descontoPercentual != null) {
+        const desconto = (precoBase * this.descontoPercentual) / 100;
+        precoBase -= desconto;
       }
-      return this.preco;
+    
+      return precoBase;
     }
+
+
+
   
     vender(quantidade: number): string {
       if (quantidade <= 0) {
@@ -64,6 +72,23 @@ class Produto {
       this.estoque += quantidade;
       return `Adicionado ${quantidade} unidades de ${this.nome} ao estoque. Novo estoque: ${this.estoque}.`;
     }
+
+    aplicarDesconto(percentual: number) : string {
+
+    if(percentual <= 0 || percentual > 100){
+      this.descontoPercentual = null;
+      return "Percentual de desconto inválido";
+    }
+    this.descontoPercentual = percentual;
+
+    return `Desconto de ${percentual}% aplicado.`
+
+
+    }
+
+
+
   }
+
   
   export { Produto };
